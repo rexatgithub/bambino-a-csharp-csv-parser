@@ -1,4 +1,4 @@
-# bambino a c# csvparser
+# bambino a c# CSV parser
 
 A C# application that parses CSV files from the target directory and insert data to the specified database.
 - bambino uses background worker to avoid system crashes
