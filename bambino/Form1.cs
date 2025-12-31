@@ -27,6 +27,7 @@ namespace bambino
         {
             InitDatabase();
         }
+
         public void ChooseFolder()
         {
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
@@ -39,7 +40,6 @@ namespace bambino
         private void button1_Click(object sender, EventArgs e)
         {
             ChooseFolder();
-
         }
 
         private void textbox1_Change(object sender, EventArgs e)
@@ -47,11 +47,10 @@ namespace bambino
             if (textBox1.Text.Length > 0)
             {
                 button2.Enabled = true;
+                return;
             }
-            else
-            {
-                button2.Enabled = false;
-            }
+
+            button2.Enabled = false;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -62,11 +61,11 @@ namespace bambino
                 button2.Enabled = false;
                 button3.Enabled = true;
                 backgroundWorker1.RunWorkerAsync();
+
+                return;
             }
-            else
-            {
-                MessageBox.Show("Something went wrong. Please Restart Bambino");
-            }
+            
+            MessageBox.Show("Something went wrong. Please Restart");
         }
 
         private void ParseCSV(string path)
@@ -93,17 +92,19 @@ namespace bambino
                         string no_slash = no_dash.Replace("/", "_");
                         columns.Add(no_slash);
                     }
+
+                    continue;
                 }
-                else
+
+                if (columns.ToArray().Length == 422)
                 {
-                    if (columns.ToArray().Length == 422)
-                    {
-                        InsertData(columns.ToArray(), fields);
-                    }
+                    InsertData(columns.ToArray(), fields);
                 }
+                
 
                 count += 1;
             }
+
             parser.Close();
         }
 
@@ -125,6 +126,7 @@ namespace bambino
                 MessageBox.Show(ex.Message);
                 conn.Close();
             }
+            
             return connected;
         }
 
@@ -133,22 +135,24 @@ namespace bambino
             string sql_statement = "INSERT INTO your_data(" + string.Join(",", columns) + @") VALUES(@" + string.Join(",@", columns) + @")";
             cmd = new MySqlCommand(sql_statement, conn);
             string field_value = "";
+
             for (int i = 0; i < columns.Length; i++)
             {
-                //Console.WriteLine("{0} {1}", i,values.Length);
                 field_value = i < values.Length ? values[i] : "";
                 cmd.Parameters.AddWithValue("@" + columns[i], field_value);
             }
+
             string result = "";
             int affected_rows = cmd.ExecuteNonQuery();
+
             if (affected_rows > 0)
             {
                 rows_inserted += affected_rows;
+                return;
             }
-            else
-            {
-                result = "Something went wrong when inserting " + values[0];
-            }
+            
+            result = "Something went wrong when inserting " + values[0];
+            
         }
 
         private void ShowProcess(string path)
@@ -157,11 +161,10 @@ namespace bambino
             if (label4.InvokeRequired)
             {
                 label4.Invoke(new MethodInvoker(() => label4.Text = current_process));
+                return;
             }
-            else
-            {
-                label4.Text = current_process;
-            }
+
+            label4.Text = current_process;
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -169,6 +172,7 @@ namespace bambino
             string[] filePaths = Directory.GetFiles(textBox1.Text, "*.csv");
             decimal completed = 0;
             total_files = filePaths.Length;
+
             foreach (string path in filePaths)
             {
                 ShowProcess(path);
@@ -182,17 +186,16 @@ namespace bambino
                 // Simulate long task
                 System.Threading.Thread.Sleep(100);
             }
+
             string result = "Total Affected Rows: " + rows_inserted.ToString();
 
             if (label2.InvokeRequired)
             {
                 label2.Invoke(new MethodInvoker(() => label2.Text = result));
+                return;
             }
-            else
-            {
-                label2.Text = result;
-            }
-
+            
+            label2.Text = result;
         }
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
