@@ -37,9 +37,3 @@ Troubleshooting
 
 Contributing
 Contributions are welcome. Please open an issue to discuss changes or submit a pull request.
-
-License
-See the LICENSE file in the repository for license details. If there is no LICENSE file, add one (MIT is a common choice).
-
-Contact
-Open issues on GitHub for bugs, feature requests, or questions.
